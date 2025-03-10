@@ -1,0 +1,13 @@
+{
+  "title": "Hi word",
+  "change_language": "Change language",
+  "username": "Username",
+  "password":"Password",
+  "driverName":"Driver name",
+  "profile":"Profile",
+  "light":"Light",
+  "dark":"Dark",
+  "expenses":"Expenses",
+  "application":"Application",
+  "logout":"Log out"
+}

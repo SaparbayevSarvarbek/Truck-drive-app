@@ -1,0 +1,13 @@
+{
+  "title": "Salom Dunyo!",
+  "change_language": "Tilni o'zgartirish",
+  "username": "ism",
+  "password":"parol",
+  "driverName":"HaydovchiIsmi",
+  "profile":"profil",
+  "light":"Kunduzgi",
+  "dark":"Kechki",
+  "expenses":"Chiqimlar",
+  "application":"Ariza",
+  "logout":"Chiqish"
+}
