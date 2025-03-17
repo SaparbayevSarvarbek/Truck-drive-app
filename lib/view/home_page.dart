@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
             : ThemeMode.light);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home page'),
+        title: Text('Асосий саҳифа'),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         centerTitle: true,
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
                         backgroundColor: Colors.indigo),
                     child: Padding(
                         padding: EdgeInsets.all(16.0),
-                        child: Text('Chiqimlar')))),
+                        child: Text('Чиқимлар')))),
             SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
