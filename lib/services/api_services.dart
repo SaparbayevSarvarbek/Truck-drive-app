@@ -12,7 +12,7 @@ class ApiService {
     });
     try {
       Response response = await dio.post(
-          'https://oyinlar.pythonanywhere.com/api/token/',
+          'https://pyco.uz/login/',
           data: formData,
           options: Options(
               headers: {HttpHeaders.contentTypeHeader: "multipart/form-data"}));
@@ -26,6 +26,19 @@ class ApiService {
     } catch (e) {
       print('Login serviceda xatolik $e');
       return {'error': 'Bunday foydalanuvchi yo\'q'};
+    }
+  }
+  void logOut(String refreshToken) async {
+    FormData formData = FormData.fromMap({
+      'refresh': refreshToken,
+    });
+    try {
+      await dio.post('https://pyco.uz/login/',
+          data: formData,
+          options: Options(
+              headers: {HttpHeaders.contentTypeHeader: "multipart/form-data"}));
+    } catch (e) {
+      print('Logout serviceda xatolik: $e');
     }
   }
 }

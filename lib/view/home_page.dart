@@ -2,14 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:truck_driver/models/user_model.dart';
+import 'package:truck_driver/view/login_page.dart';
+import 'package:truck_driver/view/profil_page.dart';
 
 import '../main.dart';
 import '../models/app_localizations.dart';
+import '../models/user_database.dart';
+import '../view_model/theme_provider.dart';
 
 class HomePage extends StatefulWidget {
-  final Function(ThemeMode) onThemeChanged;
-
-  HomePage({required this.onThemeChanged});
+  HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -17,11 +22,46 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   ThemeMode? _selectedTheme;
-  String rejim = 'Dark';
+  String rejim = 'Кундузги режим';
   bool isUzbek = true;
+  File? _image;
+  UserModel? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    Map<String, dynamic>? userMap = await UserDatabase.getUser();
+    if (userMap != null) {
+      setState(() {
+        userData = UserModel.fromJson(userMap);
+        if (userData!.profileImage != null) {
+          _image = File(userData!.profileImage!);
+        }
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      await UserDatabase.updateProfileImage(imageFile.path);
+
+      setState(() {
+        _image = imageFile;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    bool isDark = themeProvider.themeMode == ThemeMode.dark;
     Brightness systemBrightness = MediaQuery.platformBrightnessOf(context);
     ThemeMode effectiveTheme = _selectedTheme ??
         (systemBrightness == Brightness.dark
@@ -60,8 +100,7 @@ class _HomePageState extends State<HomePage> {
                         backgroundColor: Colors.indigo),
                     child: Padding(
                         padding: EdgeInsets.all(16.0),
-                        child: Text(AppLocalizations.of(context)!
-                            .translate("application"))))),
+                        child: Text('Аризалар')))),
           ],
         ),
       ),
@@ -74,11 +113,20 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.account_circle, size: 60, color: Colors.white),
-                    SizedBox(height: 10),
-                    Text(AppLocalizations.of(context)!.translate("username"),
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 36,
+                        backgroundColor: Colors.white,
+                        backgroundImage: _image != null ? FileImage(_image!) : null,
+                        child: _image == null
+                            ? const Icon(Icons.account_circle, size: 60, color: Colors.white)
+                            : null,
+                      ),
+                    ), SizedBox(height: 10),
+                    Text(userData!.fullName,
                         style: TextStyle(color: Colors.white, fontSize: 18)),
-                    Text("driver@example.com",
+                    Text(userData!.phoneNumber,
                         style: TextStyle(color: Colors.white70)),
                   ],
                 )),
@@ -87,8 +135,11 @@ class _HomePageState extends State<HomePage> {
                 Icons.account_circle,
                 color: Colors.indigo,
               ),
-              title: Text(AppLocalizations.of(context)!.translate("profile")),
-              onTap: () {},
+              title: Text(AppLocalizations.of(context)!.translate("Профил")),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ProfilePage()));
+              },
             ),
             ListTile(
                 leading: Icon(
@@ -97,43 +148,27 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text(rejim),
                 trailing: Switch.adaptive(
-                  value: effectiveTheme == ThemeMode.dark,
-                  onChanged: (bool isDark) {
+                  value: isDark,
+                  onChanged: (value) {
                     setState(() {
+                      themeProvider.toggleTheme(value);
                       _selectedTheme =
                           isDark ? ThemeMode.dark : ThemeMode.light;
-                      isDark
-                          ? rejim =
-                              AppLocalizations.of(context)!.translate("dark")
-                          : rejim =
-                              AppLocalizations.of(context)!.translate("light");
+                      isDark ? rejim = "Кундузги режим" : rejim = "Кечки режим";
                     });
-                    widget.onThemeChanged(_selectedTheme!);
+                    // widget.onThemeChanged(_selectedTheme!);
                   },
                 )),
-            ListTile(
-              leading: Icon(
-                Icons.translate,
-                color: Colors.indigo,
-              ),
-              title: Text(
-                  AppLocalizations.of(context)!.translate("change_language")),
-              trailing: Switch(
-                  value: isUzbek,
-                  onChanged: (value) {
-                    isUzbek = value;
-                    Locale newLocale = isUzbek ? Locale("uz") : Locale("en");
-                    MyApp.setLocale(context, newLocale);
-                  }),
-              onTap: () {},
-            ),
             ListTile(
               leading: Icon(
                 Icons.logout,
                 color: Colors.indigo,
               ),
-              title: Text(AppLocalizations.of(context)!.translate("logout")),
-              onTap: () {},
+              title: Text("Чиқиш"),
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+              },
             ),
           ],
         ),
