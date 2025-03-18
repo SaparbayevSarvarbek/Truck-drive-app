@@ -125,8 +125,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                 ),
                 value: list.contains(foydalanuvchi) ? foydalanuvchi : null,
                 isExpanded: true,
-                dropdownColor: Colors.white,
-                style: TextStyle(color: Colors.black, fontSize: 16),
+                style: TextStyle(fontSize: 16),
                 icon: Icon(Icons.arrow_drop_down_circle_outlined,
                     color: Colors.indigo),
                 items: list.map((item) {
@@ -138,7 +137,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                 onChanged: (newItem) {
                   setState(() {
                     foydalanuvchi = newItem!;
-                    foydalanuvchiId = list.indexOf(newItem)+1;
+                    foydalanuvchiId = list.indexOf(newItem) + 1;
                   });
                 },
               ),
@@ -167,8 +166,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                     ? kategoriyaXarajat
                     : null,
                 isExpanded: true,
-                dropdownColor: Colors.white,
-                style: TextStyle(color: Colors.black, fontSize: 16),
+                style: TextStyle(fontSize: 16),
                 icon: Icon(Icons.arrow_drop_down_circle_outlined,
                     color: Colors.indigo),
                 items: list1.map((item) {
@@ -183,7 +181,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                 onChanged: (newItem) {
                   setState(() {
                     kategoriyaXarajat = newItem!;
-                    kategoriyaXarajatId = list1.indexOf(newItem)+1;
+                    kategoriyaXarajatId = list1.indexOf(newItem) + 1;
                   });
                 },
               ),

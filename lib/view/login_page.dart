@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/app_localizations.dart';
 import '../services/api_services.dart';
 import '../view_model/login_view_model.dart';
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage();
@@ -16,13 +18,26 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final ApiService _apiService = ApiService();
   final TextEditingController _nameController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
-
   bool _obscureText = true;
 
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+  void checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    if (isLoggedIn) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

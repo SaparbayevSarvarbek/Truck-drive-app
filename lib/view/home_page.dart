@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truck_driver/models/user_model.dart';
 import 'package:truck_driver/view/complaint_page.dart';
 import 'package:truck_driver/view/expenses_page.dart';
@@ -212,7 +213,10 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.indigo,
               ),
               title: Text("Чиқиш"),
-              onTap: () {
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.remove('auth_token');
+                await prefs.remove('isLoggedIn');
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => LoginPage()));
               },
