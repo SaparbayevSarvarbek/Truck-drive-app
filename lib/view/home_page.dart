@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/models/user_model.dart';
+import 'package:truck_driver/view/expenses_page.dart';
 import 'package:truck_driver/view/login_page.dart';
 import 'package:truck_driver/view/profil_page.dart';
 
 import '../main.dart';
 import '../models/app_localizations.dart';
 import '../models/user_database.dart';
+import '../view_model/profile_provider.dart';
 import '../view_model/theme_provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -62,6 +64,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     bool isDark = themeProvider.themeMode == ThemeMode.dark;
+    final profileProvider = Provider.of<ProfileProvider>(context);
     Brightness systemBrightness = MediaQuery.platformBrightnessOf(context);
     ThemeMode effectiveTheme = _selectedTheme ??
         (systemBrightness == Brightness.dark
@@ -84,7 +87,26 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 300),
+                          pageBuilder: (context, animation, secondaryAnimation) => ExpensesPage(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            var begin = Offset(1.0, 0.0);
+                            var end = Offset.zero;
+                            var curve = Curves.easeInOut;
+
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.indigo),
@@ -109,27 +131,32 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-                decoration: BoxDecoration(color: Colors.indigo),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: _pickImage,
-                      child: CircleAvatar(
-                        radius: 36,
-                        backgroundColor: Colors.white,
-                        backgroundImage: _image != null ? FileImage(_image!) : null,
-                        child: _image == null
-                            ? const Icon(Icons.account_circle, size: 60, color: Colors.white)
-                            : null,
-                      ),
-                    ), SizedBox(height: 10),
-                    Text(userData!.fullName,
-                        style: TextStyle(color: Colors.white, fontSize: 18)),
-                    Text(userData!.phoneNumber,
-                        style: TextStyle(color: Colors.white70)),
-                  ],
-                )),
+              decoration: BoxDecoration(color: Colors.indigo),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                      if (pickedFile != null) {
+                        profileProvider.pickImage(File(pickedFile.path));
+                      }
+                    },
+                    child: CircleAvatar(
+                      radius: 36,
+                      backgroundColor: Colors.white,
+                      backgroundImage: profileProvider.image != null ? FileImage(profileProvider.image!) : null,
+                      child: profileProvider.image == null
+                          ? const Icon(Icons.account_circle, size: 60, color: Colors.white)
+                          : null,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(userData?.fullName ?? "Ism yo'q", style: TextStyle(color: Colors.white, fontSize: 18)),
+                  Text(userData?.phoneNumber ?? "Telefon yo'q", style: TextStyle(color: Colors.white70)),
+                ],
+              ),
+            ),
             ListTile(
               leading: Icon(
                 Icons.account_circle,

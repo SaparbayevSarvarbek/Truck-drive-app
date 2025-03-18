@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/view/login_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:truck_driver/view_model/expenses_view_model.dart';
 import 'package:truck_driver/view_model/login_view_model.dart';
+import 'package:truck_driver/view_model/profile_provider.dart';
 import 'package:truck_driver/view_model/theme_provider.dart';
 import 'models/app_localizations.dart';
 
 void main() {
   runApp(MultiProvider(
-    providers: [ChangeNotifierProvider(create: (context) => LoginViewModel()),
-      ChangeNotifierProvider(create: (context) => ThemeProvider())],
+    providers: [
+      ChangeNotifierProvider(create: (context) => LoginViewModel()),
+      ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ChangeNotifierProvider(create: (context) => ProfileProvider()),
+      ChangeNotifierProvider(create: (context)=>ExpensesViewModel())
+    ],
     child: MyApp(),
   ));
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 
 import '../models/user_database.dart';
 import '../models/user_model.dart';
+import '../view_model/profile_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -35,7 +37,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
       await UserDatabase.updateProfileImage(imageFile.path);
@@ -48,38 +51,44 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ProfileProvider>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile")),
+      appBar: AppBar(
+        title: const Text("Profile"),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.indigo,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Profil rasmi
             GestureDetector(
-              onTap: _pickImage,
+              onTap: () async {
+                final pickedFile =
+                    await ImagePicker().pickImage(source: ImageSource.gallery);
+                if (pickedFile != null) {
+                  profileProvider.pickImage(File(pickedFile.path));
+                }
+              },
               child: CircleAvatar(
                 radius: 50,
                 backgroundColor: Colors.grey.shade300,
-                backgroundImage: _image != null ? FileImage(_image!) : null,
-                child: _image == null
-                    ? const Icon(Icons.account_circle, size: 80, color: Colors.white)
+                backgroundImage: profileProvider.image != null
+                    ? FileImage(profileProvider.image!)
+                    : null,
+                child: profileProvider.image == null
+                    ? const Icon(Icons.account_circle,
+                        size: 80, color: Colors.white)
                     : null,
               ),
             ),
             const SizedBox(height: 20),
-
-            // Foydalanuvchi ismi
             _buildInfoCard("Ism", userData?.fullName ?? "Noma’lum"),
-
-            // Username
-            _buildInfoCard("Username", userData?.id.toString() ?? "Noma’lum"),
-
-            // Telefon raqami
-            _buildInfoCard("Telefon raqam", userData?.phoneNumber ?? "Noma’lum"),
-
-            // Status
-            _buildInfoCard("Status", userData?.profileImage ?? "Noma’lum"),
+            _buildInfoCard("Username", userData?.username ?? "Noma’lum"),
+            _buildInfoCard(
+                "Telefon raqam", userData?.phoneNumber ?? "Noma’lum"),
+            _buildInfoCard("Status", userData?.status ?? "Noma’lum"),
           ],
         ),
       ),
