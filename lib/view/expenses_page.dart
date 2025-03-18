@@ -20,7 +20,9 @@ class _ExpensesPageState extends State<ExpensesPage> {
   final TextEditingController _narxController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   String? foydalanuvchi;
+  int? foydalanuvchiId;
   String? kategoriyaXarajat;
+  int? kategoriyaXarajatId;
   List<String> list = ["admin"];
   List<String> list1 = [
     "Йўл харажатлари",
@@ -136,6 +138,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                 onChanged: (newItem) {
                   setState(() {
                     foydalanuvchi = newItem!;
+                    foydalanuvchiId = list.indexOf(newItem)+1;
                   });
                 },
               ),
@@ -180,6 +183,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                 onChanged: (newItem) {
                   setState(() {
                     kategoriyaXarajat = newItem!;
+                    kategoriyaXarajatId = list1.indexOf(newItem)+1;
                   });
                 },
               ),
@@ -223,6 +227,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                         controller: _descriptionController,
                         decoration: InputDecoration(
                             labelText: 'Изоҳ',
+                            alignLabelWithHint: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12.0),
                               borderSide:
@@ -239,7 +244,11 @@ class _ExpensesPageState extends State<ExpensesPage> {
                                   BorderSide(color: Colors.indigo, width: 2),
                             ),
                             contentPadding: EdgeInsets.symmetric(
-                                vertical: 50.0, horizontal: 10.0)),
+                                vertical: 16.0, horizontal: 10.0)),
+                        keyboardType: TextInputType.multiline,
+                        minLines: 5,
+                        maxLines: 10,
+                        maxLength: 200,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Изоҳ киритинг';
@@ -264,21 +273,24 @@ class _ExpensesPageState extends State<ExpensesPage> {
                         : () {
                             if (_formKey.currentState!.validate()) {
                               if (foydalanuvchi != null &&
-                                  kategoriyaXarajat != null) {
+                                  kategoriyaXarajat != null &&
+                                  _image != null) {
                                 ExpensesDataModel data = ExpensesDataModel(
-                                    user: foydalanuvchi!.toString(),
-                                    expense: kategoriyaXarajat!.toString(),
-                                    price: _narxController.text.toString(),
+                                    user: foydalanuvchiId ?? 1,
+                                    expense: kategoriyaXarajatId ?? 1,
+                                    price: _narxController.text,
                                     description: _descriptionController.text);
-                                print("data toliq ${data.user}  ${data.expense} ${data.price}  ${data.description} $_image");
+
+                                print(
+                                    "data toliq ${data.user} ${data.expense} ${data.price} ${data.description} $_image");
                                 context
                                     .read<ExpensesViewModel>()
                                     .addExpenses(data, _image!);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      content: Text(
-                                          "Маълумотлар тўлиқ киритинг 1212")),
+                                      content:
+                                          Text("Маълумотлар тўлиқ киритинг")),
                                 );
                               }
                             } else {

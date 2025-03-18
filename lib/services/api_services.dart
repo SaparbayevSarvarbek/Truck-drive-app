@@ -46,12 +46,14 @@ class ApiService {
   void uploadExpenses(ExpensesDataModel data, File image) async {
     try {
       FormData formData = FormData.fromMap({
-        "price": data.price, // ✅ stringga o'tkazildi
+        "price": data.price,
         "description": data.description,
-        "driver": 1, // 🔥 PK ID qilib yuborish
-        "chiqimlar": 2, // 🔥 PK ID qilib yuborish
+        "driver": data.user,
+        "chiqimlar": data.expense,
         "photo": await MultipartFile.fromFile(image.path,
-            filename: image.path.split('/').last),
+            filename: image.path
+                .split('/')
+                .last),
       });
 
       Response response = await dio.post(
@@ -59,6 +61,32 @@ class ApiService {
         data: formData,
       );
 
+      if (response.statusCode == 200) {
+        print("✅ Chiqim muvaffaqiyatli yuklandi!");
+      } else {
+        print("❌ Server xatosi: ${response.statusCode}");
+        print("🔹 API javobi: ${response.data}");
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print("🚨 API Xatolik: ${e.response!.statusCode}");
+        print("🔹 Serverdan javob: ${e.response!.data}");
+      } else {
+        print("❌ Xatolik: ${e.message}");
+      }
+    }
+  }
+
+  void addComplaint(String description, String categoryComplaint,
+      int driver) async {
+    try {
+      FormData formData = FormData.fromMap({
+        "description": description,
+        "driver": driver,
+      });
+      Response response = await dio.post(
+        'https://pyco.uz/ariza/', data: formData,);
+      print("Add Complaint service");
       if (response.statusCode == 200) {
         print("✅ Chiqim muvaffaqiyatli yuklandi!");
       } else {

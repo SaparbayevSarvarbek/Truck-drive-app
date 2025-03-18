@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/models/user_model.dart';
+import 'package:truck_driver/view/complaint_page.dart';
 import 'package:truck_driver/view/expenses_page.dart';
 import 'package:truck_driver/view/login_page.dart';
 import 'package:truck_driver/view/profil_page.dart';
@@ -90,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Navigator.of(context).push(
                         PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 300),
+                          transitionDuration: Duration(milliseconds: 350),
                           pageBuilder: (context, animation, secondaryAnimation) => ExpensesPage(),
                           transitionsBuilder: (context, animation, secondaryAnimation, child) {
                             var begin = Offset(1.0, 0.0);
@@ -116,7 +117,26 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 300),
+                          pageBuilder: (context, animation, secondaryAnimation) => ComplaintPage(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            var begin = Offset(1.0, 0.0);
+                            var end = Offset.zero;
+                            var curve = Curves.easeInOut;
+
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.indigo),

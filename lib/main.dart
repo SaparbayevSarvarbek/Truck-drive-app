@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/view/login_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:truck_driver/view_model/complaint_view_model.dart';
 import 'package:truck_driver/view_model/expenses_view_model.dart';
 import 'package:truck_driver/view_model/login_view_model.dart';
 import 'package:truck_driver/view_model/profile_provider.dart';
@@ -14,7 +15,8 @@ void main() {
       ChangeNotifierProvider(create: (context) => LoginViewModel()),
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ChangeNotifierProvider(create: (context) => ProfileProvider()),
-      ChangeNotifierProvider(create: (context)=>ExpensesViewModel())
+      ChangeNotifierProvider(create: (context)=>ExpensesViewModel()),
+      ChangeNotifierProvider(create: (context)=>ComplaintViewModel()),
     ],
     child: MyApp(),
   ));
