@@ -12,7 +12,7 @@ class ApiService {
       'password': password,
     });
     try {
-      Response response = await dio.post('https://pyco.uz/login/',
+      Response response = await dio.post('https://pyco.uz/auth/login/',
           data: formData,
           options: Options(
               headers: {HttpHeaders.contentTypeHeader: "multipart/form-data"}));
@@ -43,7 +43,7 @@ class ApiService {
     }
   }
 
-  void uploadExpenses(ExpensesDataModel data, File image) async {
+  Future<String> uploadExpenses(ExpensesDataModel data, File image) async {
     try {
       FormData formData = FormData.fromMap({
         "price": data.price,
@@ -51,9 +51,7 @@ class ApiService {
         "driver": data.user,
         "chiqimlar": data.expense,
         "photo": await MultipartFile.fromFile(image.path,
-            filename: image.path
-                .split('/')
-                .last),
+            filename: image.path.split('/').last),
       });
 
       Response response = await dio.post(
@@ -63,9 +61,11 @@ class ApiService {
 
       if (response.statusCode == 200) {
         print("✅ Chiqim muvaffaqiyatli yuklandi!");
+        return response.statusCode.toString();
       } else {
         print("❌ Server xatosi: ${response.statusCode}");
         print("🔹 API javobi: ${response.data}");
+        return response.statusCode.toString();
       }
     } on DioException catch (e) {
       if (e.response != null) {
@@ -74,18 +74,21 @@ class ApiService {
       } else {
         print("❌ Xatolik: ${e.message}");
       }
+      return e.message.toString();
     }
   }
 
-  void addComplaint(String description, String categoryComplaint,
-      int driver) async {
+  void addComplaint(
+      String description, String categoryComplaint, int driver) async {
     try {
       FormData formData = FormData.fromMap({
         "description": description,
         "driver": driver,
       });
       Response response = await dio.post(
-        'https://pyco.uz/ariza/', data: formData,);
+        'https://pyco.uz/ariza/',
+        data: formData,
+      );
       print("Add Complaint service");
       if (response.statusCode == 200) {
         print("✅ Chiqim muvaffaqiyatli yuklandi!");
@@ -102,5 +105,4 @@ class ApiService {
       }
     }
   }
-
 }

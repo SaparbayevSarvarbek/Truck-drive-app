@@ -8,9 +8,9 @@ import '../services/api_services.dart';
 
 class ExpensesViewModel extends ChangeNotifier {
   bool isLoading=false;
-  void addExpenses(ExpensesDataModel data,File image) async {
-    ApiService().uploadExpenses(data,image);
+  Future<String> addExpenses(ExpensesDataModel data,File image) async {
     notifyListeners();
+    return await ApiService().uploadExpenses(data,image);
   }
   void changeLoadingState(){
     isLoading=!isLoading;

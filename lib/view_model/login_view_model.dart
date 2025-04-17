@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,13 +26,13 @@ class LoginViewModel extends ChangeNotifier {
 
     if (response != null) {
       if (response.containsKey('refresh')) {
-
         String token = response['access'];
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
         await prefs.setBool('isLoggedIn', true);
         UserModel user = UserModel.fromJson(response['user']);
         await UserDatabase.saveUser(user.toJson());
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Kirish muvaffaqiyatli!')),
         );

@@ -55,8 +55,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profile"),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -73,19 +71,21 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor: Colors.grey.shade300,
                 backgroundImage: profileProvider.image != null
                     ? FileImage(profileProvider.image!)
                     : null,
                 child: profileProvider.image == null
-                    ? const Icon(Icons.account_circle,
-                        size: 80, color: Colors.white)
+                    ? const Icon(
+                        Icons.account_circle,
+                        size: 80,
+                      )
                     : null,
               ),
             ),
             const SizedBox(height: 20),
             _buildInfoCard("Исм", userData?.fullName ?? "Номаълум"),
-            _buildInfoCard("Фойдаланувчи номи", userData?.username ?? "Номаълум"),
+            _buildInfoCard(
+                "Фойдаланувчи номи", userData?.username ?? "Номаълум"),
             _buildInfoCard(
                 "Телефон рақам", userData?.phoneNumber ?? "Номаълум"),
             _buildInfoCard("Статус", userData?.status ?? "Номаълум"),
@@ -99,13 +99,12 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+        Text(label, style: const TextStyle(fontSize: 14)),
         const SizedBox(height: 5),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1),

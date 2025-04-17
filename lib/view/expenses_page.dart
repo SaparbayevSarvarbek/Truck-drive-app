@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/models/expenses_data_model.dart';
@@ -20,7 +21,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
   final TextEditingController _narxController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   String? foydalanuvchi;
-  int? foydalanuvchiId;
+  int? foydalanuvchiId = 1;
   String? kategoriyaXarajat;
   int? kategoriyaXarajatId;
   List<String> list = ["admin"];
@@ -37,8 +38,6 @@ class _ExpensesPageState extends State<ExpensesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Чиқимлар'),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo,
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -57,7 +56,6 @@ class _ExpensesPageState extends State<ExpensesPage> {
                             height: 180,
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: Colors.indigo,
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(10)),
@@ -66,8 +64,11 @@ class _ExpensesPageState extends State<ExpensesPage> {
                                 children: [
                                   Icon(
                                     Icons.cloud_upload_outlined,
-                                    color: Colors.indigo,
                                     size: 30,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.teal
+                                        : Colors.blue,
                                   ),
                                   SizedBox(
                                     height: 10,
@@ -84,8 +85,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                                 width: double.infinity,
                                 height: 180,
                                 decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.indigo, width: 1.5),
+                                  border: Border.all(width: 1.5),
                                 ),
                                 child: Image.file(
                                   File(_image!.path),
@@ -105,42 +105,6 @@ class _ExpensesPageState extends State<ExpensesPage> {
               SizedBox(
                 height: 16.0,
               ),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  labelText: "Фойдаланувчи",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.indigo, width: 2),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.indigo, width: 2),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.indigo, width: 2),
-                  ),
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                ),
-                value: list.contains(foydalanuvchi) ? foydalanuvchi : null,
-                isExpanded: true,
-                style: TextStyle(fontSize: 16),
-                icon: Icon(Icons.arrow_drop_down_circle_outlined,
-                    color: Colors.indigo),
-                items: list.map((item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(item, style: TextStyle(fontSize: 16)),
-                  );
-                }).toList(),
-                onChanged: (newItem) {
-                  setState(() {
-                    foydalanuvchi = newItem!;
-                    foydalanuvchiId = list.indexOf(newItem) + 1;
-                  });
-                },
-              ),
               SizedBox(
                 height: 16.0,
               ),
@@ -149,15 +113,29 @@ class _ExpensesPageState extends State<ExpensesPage> {
                   labelText: "Харажатлар категорияси",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.indigo, width: 2),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.teal
+                            : Colors.blue,
+                        width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.indigo, width: 2),
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.teal
+                          : Colors.blue, // Dark va Light tema uchun ranglar
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.indigo, width: 2),
+                    borderSide: BorderSide(
+                      width: 2,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.teal
+                          : Colors.blue, // Focus qilinganda rang
+                    ),
                   ),
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 20, horizontal: 10),
@@ -166,16 +144,30 @@ class _ExpensesPageState extends State<ExpensesPage> {
                     ? kategoriyaXarajat
                     : null,
                 isExpanded: true,
-                style: TextStyle(fontSize: 16),
-                icon: Icon(Icons.arrow_drop_down_circle_outlined,
-                    color: Colors.indigo),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black, // Matn rangini tekshirish
+                ),
+                icon: Icon(
+                  Icons.arrow_drop_down_circle_outlined,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.teal
+                      : Colors.blue, // Icon rangini o'zgartirish
+                ),
                 items: list1.map((item) {
                   return DropdownMenuItem<String>(
                     value: item,
-                    child: Text(item,
-                        style: TextStyle(
-                          fontSize: 16,
-                        )),
+                    child: Text(
+                      item,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black, // Item matni rangini o'zgartirish
+                      ),
+                    ),
                   );
                 }).toList(),
                 onChanged: (newItem) {
@@ -195,22 +187,38 @@ class _ExpensesPageState extends State<ExpensesPage> {
                     children: [
                       TextFormField(
                         controller: _narxController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         decoration: InputDecoration(
                             labelText: 'Нарх',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  BorderSide(color: Colors.indigo, width: 2),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.teal
+                                      : Colors.blue,
+                                  width: 2),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  BorderSide(color: Colors.indigo, width: 2),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.teal
+                                      : Colors.blue,
+                                  width: 2),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  BorderSide(color: Colors.indigo, width: 2),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.teal
+                                      : Colors.blue,
+                                  width: 2),
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 20.0, horizontal: 10.0)),
@@ -228,18 +236,30 @@ class _ExpensesPageState extends State<ExpensesPage> {
                             alignLabelWithHint: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12.0),
-                              borderSide:
-                                  BorderSide(color: Colors.indigo, width: 2),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.teal
+                                      : Colors.blue,
+                                  width: 2),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: Colors.indigo, width: 2),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.teal
+                                      : Colors.blue,
+                                  width: 2),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: Colors.indigo, width: 2),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.teal
+                                      : Colors.blue,
+                                  width: 2),
                             ),
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 16.0, horizontal: 10.0)),
@@ -260,12 +280,10 @@ class _ExpensesPageState extends State<ExpensesPage> {
                 height: 16.0,
               ),
               SizedBox(
-                width: MediaQuery.of(context).size.width,
+                 width: MediaQuery.of(context).size.width,
                 height: 50,
                 child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.indigo),
+                    style: ElevatedButton.styleFrom(),
                     onPressed: uploadViewModel.isLoading
                         ? null
                         : () {
@@ -279,11 +297,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                                     price: _narxController.text,
                                     description: _descriptionController.text);
 
-                                print(
-                                    "data toliq ${data.user} ${data.expense} ${data.price} ${data.description} $_image");
-                                context
-                                    .read<ExpensesViewModel>()
-                                    .addExpenses(data, _image!);
+                              //  final data =context.read<ExpensesViewModel>().addExpenses(data, _image!);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(

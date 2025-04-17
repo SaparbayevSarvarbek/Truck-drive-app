@@ -75,8 +75,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Асосий саҳифа'),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
         centerTitle: true,
       ),
       body: Container(
@@ -93,13 +91,17 @@ class _HomePageState extends State<HomePage> {
                       Navigator.of(context).push(
                         PageRouteBuilder(
                           transitionDuration: Duration(milliseconds: 350),
-                          pageBuilder: (context, animation, secondaryAnimation) => ExpensesPage(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  ExpensesPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
                             var begin = Offset(1.0, 0.0);
                             var end = Offset.zero;
                             var curve = Curves.easeInOut;
 
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
 
                             return SlideTransition(
                               position: animation.drive(tween),
@@ -109,9 +111,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.indigo),
+                    style: ElevatedButton.styleFrom(),
                     child: Padding(
                         padding: EdgeInsets.all(16.0),
                         child: Text('Чиқимлар')))),
@@ -122,13 +122,17 @@ class _HomePageState extends State<HomePage> {
                       Navigator.of(context).push(
                         PageRouteBuilder(
                           transitionDuration: Duration(milliseconds: 300),
-                          pageBuilder: (context, animation, secondaryAnimation) => ComplaintPage(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  ComplaintPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
                             var begin = Offset(1.0, 0.0);
                             var end = Offset.zero;
                             var curve = Curves.easeInOut;
 
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
 
                             return SlideTransition(
                               position: animation.drive(tween),
@@ -138,9 +142,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.indigo),
+                    style: ElevatedButton.styleFrom(),
                     child: Padding(
                         padding: EdgeInsets.all(16.0),
                         child: Text('Аризалар')))),
@@ -152,36 +154,40 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Colors.indigo),
+              decoration: BoxDecoration(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                      final pickedFile = await ImagePicker()
+                          .pickImage(source: ImageSource.gallery);
                       if (pickedFile != null) {
                         profileProvider.pickImage(File(pickedFile.path));
                       }
                     },
                     child: CircleAvatar(
                       radius: 36,
-                      backgroundColor: Colors.white,
-                      backgroundImage: profileProvider.image != null ? FileImage(profileProvider.image!) : null,
+                      backgroundImage: profileProvider.image != null
+                          ? FileImage(profileProvider.image!)
+                          : null,
                       child: profileProvider.image == null
-                          ? const Icon(Icons.account_circle, size: 60, color: Colors.white)
+                          ? const Icon(Icons.account_circle,
+                              size: 60, )
                           : null,
                     ),
                   ),
                   SizedBox(height: 10),
-                  Text(userData?.fullName ?? "Ism yo'q", style: TextStyle(color: Colors.white, fontSize: 18)),
-                  Text(userData?.phoneNumber ?? "Telefon yo'q", style: TextStyle(color: Colors.white70)),
+                  Text(userData?.fullName ?? "Ism yo'q",
+                      style: TextStyle(color: Colors.white, fontSize: 18)),
+                  Text(userData?.phoneNumber ?? "Telefon yo'q",
+                      ),
                 ],
               ),
             ),
             ListTile(
               leading: Icon(
                 Icons.account_circle,
-                color: Colors.indigo,
               ),
               title: Text(AppLocalizations.of(context)!.translate("Профил")),
               onTap: () {
@@ -192,12 +198,12 @@ class _HomePageState extends State<HomePage> {
             ListTile(
                 leading: Icon(
                   Icons.brightness_6,
-                  color: Colors.indigo,
                 ),
                 title: Text(rejim),
                 trailing: Switch.adaptive(
                   value: isDark,
                   onChanged: (value) {
+                    themeProvider.toggleTheme(value);
                     setState(() {
                       themeProvider.toggleTheme(value);
                       _selectedTheme =
@@ -210,7 +216,6 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: Icon(
                 Icons.logout,
-                color: Colors.indigo,
               ),
               title: Text("Чиқиш"),
               onTap: () async {

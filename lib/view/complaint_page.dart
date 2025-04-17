@@ -21,8 +21,6 @@ class _ComplaintPageState extends State<ComplaintPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Аризалар'),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.indigo,
       ),
       body: Column(
         children: [
@@ -37,20 +35,37 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: "Ариза тури",
+                        labelStyle: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.indigo, width: 2),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.teal
+                                  : Colors.blue,
+                              width: 2),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.indigo, width: 2),
+                          borderSide: BorderSide(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.teal
+                                    : Colors.blue,
+                            width: 2,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.indigo, width: 2),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.teal
+                                  : Colors.blue,
+                              width: 2),
                         ),
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 20, horizontal: 10),
@@ -59,14 +74,25 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           ? selectCategoryAriza
                           : null,
                       isExpanded: true,
-                      dropdownColor: Colors.white,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                      icon: Icon(Icons.arrow_drop_down_circle_outlined,
-                          color: Colors.indigo),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white // Dark modeda oq
+                            : Colors.black, // Light modeda qora
+                      ),
+                      icon: Icon(
+                        Icons.arrow_drop_down_circle_outlined,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.teal // Dark modeda oq
+                            : Colors.blue, // Light modeda qora
+                      ),
                       items: list.map((item) {
                         return DropdownMenuItem<String>(
                           value: item,
-                          child: Text(item, style: TextStyle(fontSize: 16)),
+                          child: Text(
+                            item,
+                            style: TextStyle(fontSize: 16),
+                          ),
                         );
                       }).toList(),
                       onChanged: (newItem) {
@@ -75,6 +101,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           driverId = list.indexOf(newItem) + 1;
                         });
                       },
+                      dropdownColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.black // Dark modeda qora
+                              : Colors.white, // Light modeda oq
                     ),
                     SizedBox(height: 16),
                     Form(
@@ -88,18 +118,30 @@ class _ComplaintPageState extends State<ComplaintPage> {
                               alignLabelWithHint: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
-                                borderSide:
-                                    BorderSide(color: Colors.indigo, width: 2),
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.teal
+                                        : Colors.blue,
+                                    width: 2),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    BorderSide(color: Colors.indigo, width: 2),
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.teal
+                                        : Colors.blue,
+                                    width: 2),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    BorderSide(color: Colors.indigo, width: 2),
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.teal
+                                        : Colors.blue,
+                                    width: 2),
                               ),
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 16.0, horizontal: 12.0),
@@ -141,7 +183,6 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
                   padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -150,9 +191,9 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 child: Text(
                   "Юбориш",
                   style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:truck_driver/theme/theme.dart';
 import 'package:truck_driver/view/login_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:truck_driver/view_model/complaint_view_model.dart';
@@ -9,17 +10,24 @@ import 'package:truck_driver/view_model/profile_provider.dart';
 import 'package:truck_driver/view_model/theme_provider.dart';
 import 'models/app_localizations.dart';
 
-void main() {
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (context) => LoginViewModel()),
-      ChangeNotifierProvider(create: (context) => ThemeProvider()),
-      ChangeNotifierProvider(create: (context) => ProfileProvider()),
-      ChangeNotifierProvider(create: (context)=>ExpensesViewModel()),
-      ChangeNotifierProvider(create: (context)=>ComplaintViewModel()),
-    ],
-    child: MyApp(),
-  ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadTheme();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => ExpensesViewModel()),
+        ChangeNotifierProvider(create: (_) => ComplaintViewModel()),
+        ChangeNotifierProvider(create: (_) => themeProvider),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -35,8 +43,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode? _themeMode;
-  Locale _locale = Locale('uz');
+  Locale _locale = const Locale('uz');
 
   void setLocale(Locale locale) {
     setState(() {
@@ -49,11 +56,11 @@ class _MyAppState extends State<MyApp> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
       themeMode: themeProvider.themeMode,
-      locale: Locale('uz'),
-      supportedLocales: [Locale('uz'), Locale('eng')],
+      locale: _locale,
+      supportedLocales: [const Locale('uz'), const Locale('eng')],
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

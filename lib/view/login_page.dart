@@ -28,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     checkLoginStatus();
   }
+
   void checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
@@ -38,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +66,9 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                          labelText: 'Исм', border: OutlineInputBorder()),
+                          prefixIcon: Icon(Icons.person),
+                          labelText: 'Исм',
+                          border: OutlineInputBorder()),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Илтимос исмингизни киртинг';
@@ -76,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: _obscureText,
                       decoration: InputDecoration(
                           labelText: 'Парол',
+                          prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
