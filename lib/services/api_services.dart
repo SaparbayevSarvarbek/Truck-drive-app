@@ -22,10 +22,10 @@ class ApiService {
         return {'error': 'Bad request ${response.statusCode}'};
       }
     } on SocketException {
-      return {'error': 'Internet bilan muammo bor'};
+      return {'error': 'Интернет билан муаммо бор'};
     } catch (e) {
       print('Login serviceda xatolik $e');
-      return {'error': 'Bunday foydalanuvchi yo\'q'};
+      return {'error': 'Бундай фойдаланувчи йўқ'};
     }
   }
 
