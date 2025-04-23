@@ -172,16 +172,19 @@ class _HomePageState extends State<HomePage> {
                           ? FileImage(profileProvider.image!)
                           : null,
                       child: profileProvider.image == null
-                          ? const Icon(Icons.account_circle,
-                              size: 60, )
+                          ? const Icon(
+                              Icons.account_circle,
+                              size: 60,
+                            )
                           : null,
                     ),
                   ),
                   SizedBox(height: 10),
                   Text(userData?.fullName ?? "Ism yo'q",
-                      style: TextStyle(color: Colors.white, fontSize: 18)),
-                  Text(userData?.phoneNumber ?? "Telefon yo'q",
-                      ),
+                      style: TextStyle(fontSize: 18)),
+                  Text(
+                    userData?.phoneNumber ?? "Telefon yo'q",
+                  ),
                 ],
               ),
             ),

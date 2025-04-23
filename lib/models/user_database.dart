@@ -34,6 +34,7 @@ class UserDatabase {
 
   static Future<void> saveUser(Map<String, dynamic> user) async {
     final db = await database;
+    await db.delete('user');
     await db.insert(
       'user',
       user,

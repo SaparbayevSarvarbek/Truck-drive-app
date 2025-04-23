@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/models/expenses_data_model.dart';
+import 'package:truck_driver/models/user_database.dart';
+import 'package:truck_driver/models/user_model.dart';
 import 'package:truck_driver/view_model/expenses_view_model.dart';
 
 class ExpensesPage extends StatefulWidget {
@@ -21,7 +23,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
   final TextEditingController _narxController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   String? foydalanuvchi;
-  int? foydalanuvchiId = 1;
+  int? foydalanuvchiId;
   String? kategoriyaXarajat;
   int? kategoriyaXarajatId;
   List<String> list = ["admin"];
@@ -33,7 +35,26 @@ class _ExpensesPageState extends State<ExpensesPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadUserList();
+  }
+
+  Future<void> _loadUserList() async {
+    final userMap =
+        await UserDatabase.getUser();
+
+    if (userMap != null) {
+      final user = UserModel.fromJson(userMap);
+      setState(() {
+        foydalanuvchiId = user.id;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print('foydalanuvchi id $foydalanuvchiId');
     final uploadViewModel = Provider.of<ExpensesViewModel>(context);
     return Scaffold(
       appBar: AppBar(
@@ -148,13 +169,13 @@ class _ExpensesPageState extends State<ExpensesPage> {
                   fontSize: 16,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
-                      : Colors.black, // Matn rangini tekshirish
+                      : Colors.black,
                 ),
                 icon: Icon(
                   Icons.arrow_drop_down_circle_outlined,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.teal
-                      : Colors.blue, // Icon rangini o'zgartirish
+                      : Colors.blue,
                 ),
                 items: list1.map((item) {
                   return DropdownMenuItem<String>(
@@ -165,7 +186,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                         fontSize: 16,
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Colors.white
-                            : Colors.black, // Item matni rangini o'zgartirish
+                            : Colors.black,
                       ),
                     ),
                   );
@@ -280,42 +301,73 @@ class _ExpensesPageState extends State<ExpensesPage> {
                 height: 16.0,
               ),
               SizedBox(
-                 width: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.width,
                 height: 50,
                 child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(),
-                    onPressed: uploadViewModel.isLoading
-                        ? null
-                        : () {
-                            if (_formKey.currentState!.validate()) {
-                              if (foydalanuvchi != null &&
-                                  kategoriyaXarajat != null &&
-                                  _image != null) {
-                                ExpensesDataModel data = ExpensesDataModel(
-                                    user: foydalanuvchiId ?? 1,
-                                    expense: kategoriyaXarajatId ?? 1,
-                                    price: _narxController.text,
-                                    description: _descriptionController.text);
+                  style: ElevatedButton.styleFrom(),
+                  onPressed: uploadViewModel.isLoading
+                      ? null
+                      : () async {
+                          if (_formKey.currentState!.validate()) {
+                            if (kategoriyaXarajat != null && _image != null) {
+                              ExpensesDataModel data = ExpensesDataModel(
+                                user: foydalanuvchiId ?? 1,
+                                expense: kategoriyaXarajatId ?? 1,
+                                price: _narxController.text,
+                                description: _descriptionController.text,
+                              );
 
-                              //  final data =context.read<ExpensesViewModel>().addExpenses(data, _image!);
+                              uploadViewModel.changeLoadingState();
+
+                              String result = await uploadViewModel.addExpenses(
+                                  data, _image!);
+
+                              uploadViewModel
+                                  .changeLoadingState(); // loading = false
+
+                              if (result == "200" || result == "201") {
+                                _narxController.clear();
+                                _descriptionController.clear();
+                                setState(() {
+                                  _image = null;
+                                  kategoriyaXarajat = null;
+                                  kategoriyaXarajatId = null;
+                                });
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        Text("✅ Чиқим муваффақиятли сақланди!"),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      content:
-                                          Text("Маълумотлар тўлиқ киритинг")),
+                                    content: Text("❌ Хатолик: $result"),
+                                    backgroundColor: Colors.red,
+                                  ),
                                 );
                               }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                    content:
-                                        Text("Маълумотлар тўлиқ киритинг")),
+                                  content: Text("Маълумотларни тўлиқ киритинг"),
+                                ),
                               );
                             }
-                          },
-                    child: uploadViewModel.isLoading
-                        ? CircularProgressIndicator()
-                        : Text('Сақлаш')),
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Маълумотларни тўлиқ киритинг"),
+                              ),
+                            );
+                          }
+                        },
+                  child: uploadViewModel.isLoading
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text('Сақлаш'),
+                ),
               )
             ],
           ),

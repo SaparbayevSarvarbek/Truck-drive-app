@@ -5,10 +5,12 @@ import '../services/api_services.dart';
 class ComplaintViewModel extends ChangeNotifier {
   bool isLoading = false;
 
-  void addExpenses(
-      String description, String categoryComplaint, int driver) async {
-    ApiService().addComplaint(description,categoryComplaint,driver);
+  Future<String> addComplaint(
+      String role,String description, int driver) async {
+    String data =
+        await ApiService().addComplaint(role,description, driver);
     notifyListeners();
+    return data;
   }
 
   void changeLoadingState() {

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/view_model/complaint_view_model.dart';
 
+import '../models/user_database.dart';
+import '../models/user_model.dart';
+
 class ComplaintPage extends StatefulWidget {
   const ComplaintPage({super.key});
 
@@ -13,11 +16,30 @@ class _ComplaintPageState extends State<ComplaintPage> {
   final _formKey = GlobalKey();
   final TextEditingController _descriptionController = TextEditingController();
   String? selectCategoryAriza;
+  int? selectCategoryId;
   int? driverId;
   List list = ['Йўл чиқимлари бўйича ариза', 'Қўшимча ариза'];
 
   @override
+  void initState() {
+    super.initState();
+    _loadUserList();
+  }
+
+  Future<void> _loadUserList() async {
+    final userMap = await UserDatabase.getUser();
+
+    if (userMap != null) {
+      final user = UserModel.fromJson(userMap);
+      setState(() {
+        driverId = user.id;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final uploadViewModel = Provider.of<ComplaintViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Аризалар'),
@@ -98,7 +120,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       onChanged: (newItem) {
                         setState(() {
                           selectCategoryAriza = newItem!;
-                          driverId = list.indexOf(newItem) + 1;
+                          selectCategoryId = list.indexOf(newItem);
                         });
                       },
                       dropdownColor:
@@ -170,16 +192,55 @@ class _ComplaintPageState extends State<ComplaintPage> {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_descriptionController.text.isNotEmpty &&
                       selectCategoryAriza != null) {
-                    context.read<ComplaintViewModel>().addExpenses(
-                        _descriptionController.text,
-                        selectCategoryAriza!,
-                        driverId ?? 1);
+                    uploadViewModel.changeLoadingState();
+
+                    try {
+                      String result = "";
+
+                      if (selectCategoryId == 0) {
+                        result = await context
+                            .read<ComplaintViewModel>()
+                            .addComplaint("asosiy", _descriptionController.text,
+                                driverId ?? 1);
+                      } else if (selectCategoryId == 1) {
+                        result = await context
+                            .read<ComplaintViewModel>()
+                            .addComplaint("qoshimcha",
+                                _descriptionController.text, driverId ?? 1);
+                      }
+
+                      uploadViewModel.changeLoadingState();
+
+                      if (result == "200" || result == "201") {
+                        setState(() {
+                          selectCategoryAriza = null;
+                          selectCategoryId = null;
+                          _descriptionController.clear();
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Юборилди!")),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content:
+                                  Text("Юборишда хатолик юз берди: $result")),
+                        );
+                      }
+                    } catch (e) {
+                      uploadViewModel.changeLoadingState();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Хатолик: ${e.toString()}")),
+                      );
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Маълумотлар тўлиқ киритинг')));
+                      SnackBar(content: Text('Маълумотлар тўлиқ киритинг')),
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(

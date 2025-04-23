@@ -63,45 +63,57 @@ class ApiService {
         print("✅ Chiqim muvaffaqiyatli yuklandi!");
         return response.statusCode.toString();
       } else {
-        print("❌ Server xatosi: ${response.statusCode}");
+        print("❌ Server xatosi uploadExpenses: ${response.statusCode}");
         print("🔹 API javobi: ${response.data}");
         return response.statusCode.toString();
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        print("🚨 API Xatolik: ${e.response!.statusCode}");
+        print("🚨 API Xatolik uploadExpenses: ${e.response!.statusCode}");
         print("🔹 Serverdan javob: ${e.response!.data}");
       } else {
-        print("❌ Xatolik: ${e.message}");
+        print("❌ Xatolik uploadExpenses: ${e.message}");
       }
       return e.message.toString();
     }
   }
 
-  void addComplaint(
-      String description, String categoryComplaint, int driver) async {
+  Future<String> addComplaint(
+      String role,String description, int driver) async {
+    String url;
+    if (role == 'asosiy') {
+      url = 'https://pyco.uz/ariza/';
+    } else if (role == 'qoshimcha') {
+      url = 'https://pyco.uz/referens/';
+    } else {
+      throw Exception('Noto‘g‘ri rol tanlandi');
+    }
     try {
       FormData formData = FormData.fromMap({
         "description": description,
         "driver": driver,
       });
       Response response = await dio.post(
-        'https://pyco.uz/ariza/',
+        url,
         data: formData,
       );
       print("Add Complaint service");
       if (response.statusCode == 200) {
         print("✅ Chiqim muvaffaqiyatli yuklandi!");
+        return response.statusCode.toString();
       } else {
-        print("❌ Server xatosi: ${response.statusCode}");
+        print("❌ Server xatosi addComplaint: ${response.statusCode}");
         print("🔹 API javobi: ${response.data}");
+        return response.statusCode.toString();
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        print("🚨 API Xatolik: ${e.response!.statusCode}");
+        print("🚨 API Xatolik addComplaint: ${e.response!.statusCode}");
         print("🔹 Serverdan javob: ${e.response!.data}");
+        return e.response.toString();
       } else {
-        print("❌ Xatolik: ${e.message}");
+        print("❌ Xatolik addComplaint: ${e.message}");
+        return e.message.toString();
       }
     }
   }
