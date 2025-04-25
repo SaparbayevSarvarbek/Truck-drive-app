@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:truck_driver/models/expenses_data_model.dart';
 import 'package:truck_driver/models/user_database.dart';
 import 'package:truck_driver/models/user_model.dart';
+import 'package:truck_driver/theme/my_dialog.dart';
 import 'package:truck_driver/view_model/expenses_view_model.dart';
 
 class ExpensesPage extends StatefulWidget {
@@ -41,8 +42,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
   }
 
   Future<void> _loadUserList() async {
-    final userMap =
-        await UserDatabase.getUser();
+    final userMap = await UserDatabase.getUser();
 
     if (userMap != null) {
       final user = UserModel.fromJson(userMap);
@@ -68,7 +68,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
           child: Column(
             children: [
               GestureDetector(
-                  onTap: _pickImage,
+                  onTap: () => showImageSourcePicker(context),
                   child: _image == null
                       ? Card(
                           elevation: 5,
@@ -333,35 +333,16 @@ class _ExpensesPageState extends State<ExpensesPage> {
                                   kategoriyaXarajat = null;
                                   kategoriyaXarajatId = null;
                                 });
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text("✅ Чиқим муваффақиятли сақланди!"),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
+                                MyDialog.info('Чиқим муваффақиятли юборилди!');
+                                Navigator.pop(context);
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text("❌ Хатолик: $result"),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
+                                MyDialog.error(result);
                               }
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Маълумотларни тўлиқ киритинг"),
-                                ),
-                              );
+                              MyDialog.error('Маълумотларни тўлиқ киритинг');
                             }
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Маълумотларни тўлиқ киритинг"),
-                              ),
-                            );
+                            MyDialog.error('Маълумотларни тўлиқ киритинг');
                           }
                         },
                   child: uploadViewModel.isLoading
@@ -376,16 +357,48 @@ class _ExpensesPageState extends State<ExpensesPage> {
     );
   }
 
-  Future<void> _pickImage() async {
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+  Future<void> showImageSourcePicker(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Галереядан танлаш'),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final pickedFile =
+                    await _picker.pickImage(source: ImageSource.gallery);
+                if (pickedFile != null) {
+                  _setImage(File(pickedFile.path));
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Камерадан олиш'),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final pickedFile =
+                    await _picker.pickImage(source: ImageSource.camera);
+                if (pickedFile != null) {
+                  _setImage(File(pickedFile.path));
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    } else {
-      print("Hech qanday rasm tanlanmadi.");
-    }
+  void _setImage(File pickedFile) {
+    setState(() {
+      _image = pickedFile;
+    });
   }
 }

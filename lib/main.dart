@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/theme/theme.dart';
 import 'package:truck_driver/view/login_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:truck_driver/view/splash_screen_page.dart';
 import 'package:truck_driver/view_model/complaint_view_model.dart';
 import 'package:truck_driver/view_model/expenses_view_model.dart';
 import 'package:truck_driver/view_model/login_view_model.dart';
@@ -54,7 +56,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
@@ -67,7 +69,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: LoginPage(),
+      home: SplashScreenPage(),
     );
   }
 }

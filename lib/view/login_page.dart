@@ -3,11 +3,8 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/app_localizations.dart';
-import '../services/api_services.dart';
+import 'package:truck_driver/theme/my_dialog.dart';
 import '../view_model/login_view_model.dart';
-import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage();
@@ -26,18 +23,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    checkLoginStatus();
-  }
-
-  void checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    if (isLoggedIn) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    }
   }
 
   @override
@@ -119,10 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                                         context);
                                   }
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text("Интернет мавжуд эмас")),
-                                  );
+                                  MyDialog.error('Интернет мавжуд эмас');
                                 }
                               },
                               child: Text(

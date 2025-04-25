@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truck_driver/models/user_database.dart';
 import 'package:truck_driver/models/user_model.dart';
+import 'package:truck_driver/theme/my_dialog.dart';
 
 import '../services/api_services.dart';
 import '../view/home_page.dart';
@@ -33,26 +34,18 @@ class LoginViewModel extends ChangeNotifier {
         UserModel user = UserModel.fromJson(response['user']);
         await UserDatabase.saveUser(user.toJson());
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kirish muvaffaqiyatli!')),
-        );
-
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
-
+        MyDialog.info('Кириш муваффақиятли!');
       }
       else {
-        errorMessage = response['error'] ?? 'Bunday foydalanuvchi yo\'q';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage!)),
-        );
+        errorMessage = response['error'] ?? 'Бундай фойдаланувчи йўқ';
+        MyDialog.error("$errorMessage");
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tarmoq xatoligi yuz berdi')),
-      );
+      MyDialog.error('Тармоқ хатолиги юз берди');
     }
   }
   Future logOut(String refreshToken)async{

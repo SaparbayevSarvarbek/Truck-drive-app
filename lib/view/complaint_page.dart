@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:truck_driver/theme/my_dialog.dart';
 import 'package:truck_driver/view_model/complaint_view_model.dart';
 
 import '../models/user_database.dart';
@@ -221,26 +222,17 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           _descriptionController.clear();
                         });
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Юборилди!")),
-                        );
+                        MyDialog.info('Ариза юборилди!');
+                        Navigator.pop(context);
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content:
-                                  Text("Юборишда хатолик юз берди: $result")),
-                        );
+                        MyDialog.error('Ариза юборишда хатолик юз берди: $result');
                       }
                     } catch (e) {
                       uploadViewModel.changeLoadingState();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Хатолик: ${e.toString()}")),
-                      );
+                      MyDialog.error("Хатолик: ${e.toString()}");
                     }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Маълумотлар тўлиқ киритинг')),
-                    );
+                    MyDialog.error('Маълумотлар тўлиқ киритинг');
                   }
                 },
                 style: ElevatedButton.styleFrom(
