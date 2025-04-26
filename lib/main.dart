@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:truck_driver/view/splash_screen_page.dart';
 import 'package:truck_driver/view_model/complaint_view_model.dart';
 import 'package:truck_driver/view_model/expenses_view_model.dart';
+import 'package:truck_driver/view_model/history_viewmodel.dart';
 import 'package:truck_driver/view_model/login_view_model.dart';
 import 'package:truck_driver/view_model/profile_provider.dart';
 import 'package:truck_driver/view_model/theme_provider.dart';
@@ -25,6 +26,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => ExpensesViewModel()),
         ChangeNotifierProvider(create: (_) => ComplaintViewModel()),
+        ChangeNotifierProvider(create: (_) => HistoryViewModel()),
         ChangeNotifierProvider(create: (_) => themeProvider),
       ],
       child: MyApp(),

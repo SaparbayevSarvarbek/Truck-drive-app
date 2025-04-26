@@ -10,6 +10,7 @@ import 'package:truck_driver/models/user_model.dart';
 import 'package:truck_driver/theme/my_dialog.dart';
 import 'package:truck_driver/view/complaint_page.dart';
 import 'package:truck_driver/view/expenses_page.dart';
+import 'package:truck_driver/view/history_page.dart';
 import 'package:truck_driver/view/login_page.dart';
 import 'package:truck_driver/view/profil_page.dart';
 
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   bool isUzbek = true;
   File? _image;
   UserModel? userData;
+  int? userId;
 
   @override
   void initState() {
@@ -42,8 +44,9 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadUserData() async {
     Map<String, dynamic>? userMap = await UserDatabase.getUser();
     if (userMap != null) {
+      userData = UserModel.fromJson(userMap);
       setState(() {
-        userData = UserModel.fromJson(userMap);
+        userId = userData?.id;
         if (userData!.profileImage != null) {
           _image = File(userData!.profileImage!);
         }
@@ -222,7 +225,29 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: GestureDetector(
                 onTap: () {
-                  // Hisobot sahifasiga o'tish funksiyasi
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      transitionDuration: const Duration(milliseconds: 300),
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          HistoryPage(
+                        userId: userId!,
+                      ),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        var begin = const Offset(1.0, 0.0);
+                        var end = Offset.zero;
+                        var curve = Curves.easeInOut;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
                 },
                 child: Container(
                   width: double.infinity,

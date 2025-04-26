@@ -117,4 +117,13 @@ class ApiService {
       }
     }
   }
+
+  Future<Map<String, dynamic>> getHistory(int userId) async {
+    try {
+      final response = await dio.get('https://pyco.uz/customusers/$userId/driver-history/');
+      return response.data;
+    } catch (e) {
+      throw Exception('Failed to load history: $e');
+    }
+  }
 }
