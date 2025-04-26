@@ -15,11 +15,11 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      name: json['name'],
+      name: json['name'] ?? '',
       price: json['price'].toDouble(),
-      count: json['count'],
-      fromLocation: json['from_location'],
-      toLocation: json['to_location'],
+      count: json['count'] ?? '',
+      fromLocation: json['from_location'] ?? 'Номаълум',
+      toLocation: json['to_location'] ?? 'Номаълум',
     );
   }
 }

@@ -6,8 +6,8 @@ class Driver {
 
   factory Driver.fromJson(Map<String, dynamic> json) {
     return Driver(
-      fullname: json['fullname'],
-      phoneNumber: json['phone_number'],
+      fullname: json['fullname']??'Ҳайдовчи исми йўқ',
+      phoneNumber: json['phone_number']??0,
     );
   }
 }

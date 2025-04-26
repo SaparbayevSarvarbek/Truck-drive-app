@@ -225,7 +225,8 @@ class _ComplaintPageState extends State<ComplaintPage> {
                         MyDialog.info('Ариза юборилди!');
                         Navigator.pop(context);
                       } else {
-                        MyDialog.error('Ариза юборишда хатолик юз берди: $result');
+                        MyDialog.error(
+                            'Ариза юборишда хатолик юз берди: $result');
                       }
                     } catch (e) {
                       uploadViewModel.changeLoadingState();

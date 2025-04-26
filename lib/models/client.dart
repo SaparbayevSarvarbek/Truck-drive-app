@@ -19,10 +19,10 @@ class Client {
     var listProducts = json['products'] as List;
 
     return Client(
-      id: json['id'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
-      number: json['number'],
+      id: json['id']??0,
+      firstName: json['first_name']??'Исм йўқ',
+      lastName: json['last_name']??'Фамилия йўқ',
+      number: json['number']??0,
       products: listProducts.map((product) => Product.fromJson(product)).toList(),
     );
   }

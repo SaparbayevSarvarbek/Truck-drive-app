@@ -27,6 +27,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Color color = Theme.of(context).brightness == Brightness.dark
+        ? Colors.teal
+        : Colors.blue;
     return Scaffold(
         body: Container(
             width: MediaQuery.of(context).size.width,
@@ -51,31 +54,55 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.person),
-                          labelText: 'Исм',
-                          border: OutlineInputBorder()),
+                        prefixIcon: Icon(Icons.person, color: color),
+                        labelText: 'Исм',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: color, width: 2),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: color, width: 2),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: color, width: 2),
+                        ),
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Илтимос исмингизни киртинг';
                         }
+                        return null;
                       },
                     ),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscureText,
                       decoration: InputDecoration(
-                          labelText: 'Парол',
-                          prefixIcon: Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
-                              },
-                              icon: Icon(_obscureText
-                                  ? Icons.visibility_off
-                                  : Icons.visibility)),
-                          border: OutlineInputBorder()),
+                        labelText: 'Парол',
+                        prefixIcon: Icon(
+                          Icons.lock,
+                          color: color,
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                          icon: Icon(_obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          color: color,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: color, width: 2),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: color, width: 2),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: color, width: 2),
+                        ),
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Илтимос паролни киритинг';
@@ -92,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                           ? CircularProgressIndicator()
                           : ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.indigo,
+                                backgroundColor: color,
                               ),
                               onPressed: () async {
                                 bool isConnected = await checkInternet();
