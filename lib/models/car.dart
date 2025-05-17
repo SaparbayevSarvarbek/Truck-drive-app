@@ -6,8 +6,8 @@ class Car {
 
   factory Car.fromJson(Map<String, dynamic> json) {
     return Car(
-      name: json['name']??'Машин номи йўқ',
-      number: json['number']??'Машин рақами йўқ',
+      name: json['name'] ?? 'Машин номи йўқ',
+      number: json['number'] ?? 'Машин рақами йўқ',
     );
   }
 }

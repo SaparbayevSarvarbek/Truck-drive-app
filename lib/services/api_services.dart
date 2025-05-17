@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:truck_driver/models/debt_model.dart';
 import 'package:truck_driver/models/expenses_data_model.dart';
 
 class ApiService {
@@ -124,6 +125,23 @@ class ApiService {
       return response.data;
     } catch (e) {
       throw Exception('Failed to load history: $e');
+    }
+  }
+
+  Future<List<HistoryDebtModel>> getDebt(int userId) async {
+    try {
+      final response = await dio.get("https://pyco.uz/casa/via-driver-summary/?driver_id=$userId");
+
+      if (response.statusCode == 200) {
+        final List data = response.data;
+        return data.map((item) => HistoryDebtModel.fromJson(item)).toList();
+      } else {
+        throw Exception("Xatolik: ${response.statusMessage}");
+      }
+    } on DioException catch (e) {
+      throw Exception("Dio hatolik: ${e.message}");
+    } catch (e) {
+      throw Exception("Noma’lum xatolik: $e");
     }
   }
 }

@@ -6,8 +6,8 @@ class Fourgon {
 
   factory Fourgon.fromJson(Map<String, dynamic> json) {
     return Fourgon(
-      name: json['name']??'Фургон номи йўқ',
-      number: json['number']??'Фургон рақами йўқ',
+      name: json['name'] ?? 'Фургон номи йўқ',
+      number: json['number'] ?? 'Фургон рақами йўқ',
     );
   }
 }

@@ -1,14 +1,14 @@
-import 'package:truck_driver/models/product.dart';
-
 import 'car.dart';
 import 'client.dart';
 import 'country.dart';
 import 'driver.dart';
 import 'expense.dart';
 import 'furgon.dart';
+import 'product.dart';
 
 class History {
   final int id;
+  final int raysId;
   final Country country;
   final Driver driver;
   final Car car;
@@ -26,6 +26,7 @@ class History {
 
   History({
     required this.id,
+    required this.raysId,
     required this.country,
     required this.driver,
     required this.car,
@@ -43,22 +44,29 @@ class History {
   });
 
   factory History.fromJson(Map<String, dynamic> json) {
+    List<Client> clients = (json['client'] as List?)?.map((e) => Client.fromJson(e)).toList() ?? [];
+    List<Product> allProducts = [];
+    for (var c in clients) {
+      allProducts.addAll(c.products);
+    }
+
     return History(
-      id: json['id']??0,
+      id: json['id'] ?? 0,
+      raysId: json['rays_id'] ?? 0,
       country: Country.fromJson(json['country']),
       driver: Driver.fromJson(json['driver']),
       car: Car.fromJson(json['car']),
       fourgon: Fourgon.fromJson(json['fourgon']),
-      client: (json['client'] as List).map((e) => Client.fromJson(e)).toList(),
-      price: json['price']??'Narxi yo\'q',
-      drPrice: json['dr_price']??0,
-      dpPrice: json['dp_price']??0,
-      kilometer: json['kilometer']??0,
-      dpInformation: json['dp_information']??'',
-      createdAt: json['created_at']??'',
-      count: json['count']??0,
-      products: (json['products'] as List).map((e) => Product.fromJson(e)).toList(),
-      expenses: (json['expenses'] as List).map((e) => Expense.fromJson(e)).toList(),
+      client: clients,
+      price: json['price'] ?? 0,
+      drPrice: json['dr_price'] ?? 0,
+      dpPrice: json['dp_price'] ?? 0,
+      kilometer: json['kilometer'] ?? 0,
+      dpInformation: json['dp_information'] ?? '',
+      createdAt: json['created_at'] ?? '',
+      count: json['count'] ?? 0,
+      products: allProducts,
+      expenses: (json['expenses'] as List?)?.map((e) => Expense.fromJson(e)).toList() ?? [],
     );
   }
 }
