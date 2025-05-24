@@ -74,7 +74,7 @@ class _SplashScreenPageState extends State<SplashScreenPage>
               const SizedBox(height: 20),
 
               const Text(
-                'Truck Driver App',
+                'RBL Logistics',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -84,7 +84,7 @@ class _SplashScreenPageState extends State<SplashScreenPage>
               ),
               const SizedBox(height: 10),
               const Text(
-                'Yuk haydovchilari uchun eng yaxshi ilova',
+                'Дастурга хуш келибсиз',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 30),
