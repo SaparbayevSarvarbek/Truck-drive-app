@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +17,6 @@ import 'package:truck_driver/view/history_page.dart';
 import 'package:truck_driver/view/login_page.dart';
 import 'package:truck_driver/view/profil_page.dart';
 
-import '../main.dart';
 import '../models/app_localizations.dart';
 import '../models/user_database.dart';
 import '../view_model/profile_provider.dart';
@@ -35,11 +36,38 @@ class _HomePageState extends State<HomePage> {
   File? _image;
   UserModel? userData;
   int? userId;
+  bool isConnectInternet = false;
+  StreamSubscription? _internetConnectionSubscription;
 
   @override
   void initState() {
     super.initState();
+    _internetConnectionSubscription =
+        InternetConnection().onStatusChange.listen((event) {
+      switch (event) {
+        case InternetStatus.connected:
+          setState(() {
+            isConnectInternet = true;
+          });
+          break;
+        case InternetStatus.disconnected:
+          setState(() {
+            isConnectInternet = false;
+          });
+          break;
+        default:
+          setState(() {
+            isConnectInternet = false;
+          });
+      }
+    });
     _loadUserData();
+  }
+
+  @override
+  void dispose() {
+    _internetConnectionSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -84,266 +112,295 @@ class _HomePageState extends State<HomePage> {
         title: Text('Асосий саҳифа'),
         centerTitle: true,
       ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.0),
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          spacing: 16.0,
-          children: [
-            Lottie.asset(
-              'assets/lottie/truck.json',
-              width: MediaQuery.of(context).size.width,
-              height: 260,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Bunyod truck',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+      body: SingleChildScrollView(
+        child: isConnectInternet
+            ? Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.0),
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 16.0,
+                  children: [
+                    Lottie.asset(
+                      'assets/lottie/truck.json',
+                      width: MediaQuery.of(context).size.width,
+                      height: 260,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Bunyod truck',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        const Duration(milliseconds: 350),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        ExpensesPage(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      var begin = const Offset(1.0, 0.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.easeInOut;
+
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  color: expenseColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Чиқимлар',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        const Duration(milliseconds: 300),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        ComplaintPage(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      var begin = const Offset(1.0, 0.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.easeInOut;
+
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  color: expenseColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Аризалар',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        const Duration(milliseconds: 350),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        DebtPage(
+                                      userId: userId ?? 0,
+                                    ),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      var begin = const Offset(1.0, 0.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.easeInOut;
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  color: expenseColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Қарздорлик',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        const Duration(milliseconds: 300),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        HistoryPage(
+                                      userId: userId??0,
+                                    ),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      var begin = const Offset(1.0, 0.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.easeInOut;
+
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  color: expenseColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Тарих',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            : Center(
+                heightFactor: 2,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    double size = constraints.maxWidth * 0.7;
+                    if (size > constraints.maxHeight * 0.7) {
+                      size = constraints.maxHeight * 0.7;
+                    }
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: size,
+                          height: size,
+                          child: Lottie.asset('assets/lottie/internet.json'),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          'Интернет билан муоммо бор',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
-              textAlign: TextAlign.left,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            transitionDuration:
-                                const Duration(milliseconds: 350),
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    ExpensesPage(),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              var begin = const Offset(1.0, 0.0);
-                              var end = Offset.zero;
-                              var curve = Curves.easeInOut;
-
-                              var tween = Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve));
-
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Container(
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: expenseColor,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 10,
-                              offset: Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Чиқимлар',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            transitionDuration:
-                                const Duration(milliseconds: 300),
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    ComplaintPage(),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              var begin = const Offset(1.0, 0.0);
-                              var end = Offset.zero;
-                              var curve = Curves.easeInOut;
-
-                              var tween = Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve));
-
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Container(
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: expenseColor,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 10,
-                              offset: Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Аризалар',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            transitionDuration:
-                                const Duration(milliseconds: 350),
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    DebtPage(
-                              userId: userId!,
-                            ),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              var begin = const Offset(1.0, 0.0);
-                              var end = Offset.zero;
-                              var curve = Curves.easeInOut;
-
-                              var tween = Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve));
-
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Container(
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: expenseColor,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 10,
-                              offset: Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Қарздорлик',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            transitionDuration:
-                                const Duration(milliseconds: 300),
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    HistoryPage(
-                              userId: userId!,
-                            ),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              var begin = const Offset(1.0, 0.0);
-                              var end = Offset.zero;
-                              var curve = Curves.easeInOut;
-
-                              var tween = Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve));
-
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Container(
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: expenseColor,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 10,
-                              offset: Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Тарих',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
       drawer: Drawer(
         child: ListView(

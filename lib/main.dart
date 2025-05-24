@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/theme/theme.dart';
-import 'package:truck_driver/view/login_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:truck_driver/view/splash_screen_page.dart';
 import 'package:truck_driver/view_model/complaint_view_model.dart';

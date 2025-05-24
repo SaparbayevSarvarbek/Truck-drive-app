@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:truck_driver/theme/my_dialog.dart';
+import 'package:truck_driver/view/home_page.dart';
 import '../view_model/login_view_model.dart';
 
 class LoginPage extends StatefulWidget {
@@ -122,9 +123,11 @@ class _LoginPageState extends State<LoginPage> {
                                 backgroundColor: color,
                               ),
                               onPressed: () async {
-                                bool isConnected = await checkInternet();
+                                bool isConnected = await checkInternetConnection();
                                 if (isConnected) {
                                   if (_formKey.currentState!.validate()) {
+                                    print(
+                                        '${_nameController.text}  ${_passwordController.text}');
                                     context.read<LoginViewModel>().loginUser(
                                         _nameController.text,
                                         _passwordController.text,
@@ -145,16 +148,23 @@ class _LoginPageState extends State<LoginPage> {
               );
             })));
   }
-
-  Future<bool> checkInternet() async {
+  Future<bool> checkInternetConnection() async {
     var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) return false;
+
+    if (connectivityResult == ConnectivityResult.none) {
+      return false;
+    }
 
     try {
       final result = await InternetAddress.lookup('google.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (_) {
       return false;
     }
   }
+
 }

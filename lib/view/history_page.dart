@@ -173,7 +173,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                 fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                         ),
-                        if (history.expenses.isEmpty)
+                        if (history.expenses.texnics.isEmpty)
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
@@ -182,15 +182,12 @@ class _HistoryPageState extends State<HistoryPage> {
                             ),
                           )
                         else
-                          ...history.expenses.map((e) => ListTile(
+                          ...history.expenses.texnics.map<Widget>((e) => ListTile(
                             dense: true,
-                            visualDensity:
-                            VisualDensity(horizontal: 0, vertical: -4),
+                            visualDensity: VisualDensity(horizontal: 0, vertical: -4),
                             minVerticalPadding: 0,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            leading: Icon(Icons.attach_money_sharp,
-                                color: iconColor, size: 20),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                            leading: Icon(Icons.attach_money_sharp, color: iconColor, size: 20),
                             title: Text(
                               '${e.name}: ${e.price}',
                               style: const TextStyle(fontSize: 14),
@@ -199,7 +196,8 @@ class _HistoryPageState extends State<HistoryPage> {
                               e.description ?? '',
                               style: const TextStyle(fontSize: 12),
                             ),
-                          )),
+                          )).toList(),
+
                       ],
                     ),
                   ),

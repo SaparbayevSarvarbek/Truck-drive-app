@@ -4,8 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:truck_driver/models/debt_model.dart';
 import 'package:truck_driver/models/expenses_data_model.dart';
 
+import '../models/currency_model.dart';
+import '../models/expense_category_model.dart';
+
 class ApiService {
-  Dio dio = Dio();
+  static Dio dio = Dio();
 
   Future<Map<String, dynamic>?> login(String username, String password) async {
     FormData formData = FormData.fromMap({
@@ -51,6 +54,7 @@ class ApiService {
         "description": data.description,
         "driver": data.user,
         "chiqimlar": data.expense,
+        "currency":data.currency,
         "photo": await MultipartFile.fromFile(image.path,
             filename: image.path.split('/').last),
       });
@@ -80,7 +84,7 @@ class ApiService {
   }
 
   Future<String> addComplaint(
-      String role,String description, int driver) async {
+      String role, String description, int driver) async {
     String url;
     if (role == 'asosiy') {
       url = 'https://pyco.uz/ariza/';
@@ -121,7 +125,8 @@ class ApiService {
 
   Future<Map<String, dynamic>> getHistory(int userId) async {
     try {
-      final response = await dio.get('https://pyco.uz/customusers/$userId/driver-history/');
+      final response =
+          await dio.get('https://pyco.uz/customusers/$userId/driver-history/');
       return response.data;
     } catch (e) {
       throw Exception('Failed to load history: $e');
@@ -130,7 +135,8 @@ class ApiService {
 
   Future<List<HistoryDebtModel>> getDebt(int userId) async {
     try {
-      final response = await dio.get("https://pyco.uz/casa/via-driver-summary/?driver_id=$userId");
+      final response =
+          await dio.get("https://pyco.uz/casa/via-driver-summary/?driver_id=$userId");
 
       if (response.statusCode == 200) {
         final List data = response.data;
@@ -142,6 +148,41 @@ class ApiService {
       throw Exception("Dio hatolik: ${e.message}");
     } catch (e) {
       throw Exception("Noma’lum xatolik: $e");
+    }
+  }
+
+  static Future<List<CurrencyModel>> fetchCurrencies() async {
+    try {
+      final response = await dio.get('https://pyco.uz/currency/');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = response.data;
+        return jsonList.map((json) => CurrencyModel.fromJson(json)).toList();
+      } else {
+        print('Valyutalar yuklab olinmadi: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Xatolik yuz berdi: $e');
+      return [];
+    }
+  }
+
+  static Future<List<ExpenseCategoryModel>> fetchExpenseTypes() async {
+    try {
+      final response = await dio.get('https://pyco.uz/chiqimlarcategory/');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((json) => ExpenseCategoryModel.fromJson(json)).toList();
+      } else {
+        print(
+            'Failed to load expense types. Status code: ${response.statusCode}');
+        return [];
+      }
+    } on DioException catch (e) {
+      print('Dio error: ${e.message}');
+      return [];
     }
   }
 }

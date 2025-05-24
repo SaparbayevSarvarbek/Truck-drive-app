@@ -1,8 +1,9 @@
+import 'expense.dart';
+
 import 'car.dart';
 import 'client.dart';
 import 'country.dart';
 import 'driver.dart';
-import 'expense.dart';
 import 'furgon.dart';
 import 'product.dart';
 
@@ -22,7 +23,7 @@ class History {
   final String createdAt;
   final int count;
   final List<Product> products;
-  final List<Expense> expenses;
+  final Expense expenses;
 
   History({
     required this.id,
@@ -44,7 +45,10 @@ class History {
   });
 
   factory History.fromJson(Map<String, dynamic> json) {
-    List<Client> clients = (json['client'] as List?)?.map((e) => Client.fromJson(e)).toList() ?? [];
+    List<Client> clients =
+        (json['client'] as List?)?.map((e) => Client.fromJson(e)).toList() ??
+            [];
+
     List<Product> allProducts = [];
     for (var c in clients) {
       allProducts.addAll(c.products);
@@ -66,7 +70,7 @@ class History {
       createdAt: json['created_at'] ?? '',
       count: json['count'] ?? 0,
       products: allProducts,
-      expenses: (json['expenses'] as List?)?.map((e) => Expense.fromJson(e)).toList() ?? [],
+      expenses: Expense.fromJson(json['expenses'] ?? {}),
     );
   }
 }

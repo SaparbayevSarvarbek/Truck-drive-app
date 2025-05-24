@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:truck_driver/models/currency_model.dart';
+import 'package:truck_driver/models/expense_category_model.dart';
 import 'package:truck_driver/models/expenses_data_model.dart';
 import 'package:truck_driver/models/user_database.dart';
 import 'package:truck_driver/models/user_model.dart';
+import 'package:truck_driver/services/api_services.dart';
 import 'package:truck_driver/theme/my_dialog.dart';
 import 'package:truck_driver/view_model/expenses_view_model.dart';
 
@@ -23,11 +26,13 @@ class _ExpensesPageState extends State<ExpensesPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _narxController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _valyutaController = TextEditingController();
+  List<CurrencyModel> valyutaList = [];
+  CurrencyModel? selectedValyuta;
+  List<ExpenseCategoryModel> chiqimlarKategoryList = [];
+  ExpenseCategoryModel? selectedExpenseCategory;
   String? foydalanuvchi;
   int? foydalanuvchiId;
-  String? kategoriyaXarajat;
-  int? kategoriyaXarajatId;
-  List<String> list = ["admin"];
   List<String> list1 = [
     "Йўл харажатлари",
     "Пост харажатлари",
@@ -39,17 +44,32 @@ class _ExpensesPageState extends State<ExpensesPage> {
   void initState() {
     super.initState();
     _loadUserList();
+    _loadCurrency();
+    _loadCategory();
   }
 
   Future<void> _loadUserList() async {
     final userMap = await UserDatabase.getUser();
-
     if (userMap != null) {
       final user = UserModel.fromJson(userMap);
       setState(() {
         foydalanuvchiId = user.id;
       });
     }
+  }
+
+  Future<void> _loadCurrency() async {
+    final data = await ApiService.fetchCurrencies();
+    setState(() {
+      valyutaList = data;
+    });
+  }
+
+  Future<void> _loadCategory() async {
+    final data = await ApiService.fetchExpenseTypes();
+    setState(() {
+      chiqimlarKategoryList = data;
+    });
   }
 
   @override
@@ -126,19 +146,17 @@ class _ExpensesPageState extends State<ExpensesPage> {
               SizedBox(
                 height: 16.0,
               ),
-              SizedBox(
-                height: 16.0,
-              ),
-              DropdownButtonFormField<String>(
+              DropdownButtonFormField<ExpenseCategoryModel>(
                 decoration: InputDecoration(
                   labelText: "Харажатлар категорияси",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.teal
-                            : Colors.blue,
-                        width: 2),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.teal
+                          : Colors.blue,
+                      width: 2,
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -146,7 +164,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
                       width: 2,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.teal
-                          : Colors.blue, // Dark va Light tema uchun ranglar
+                          : Colors.blue,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -155,15 +173,13 @@ class _ExpensesPageState extends State<ExpensesPage> {
                       width: 2,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.teal
-                          : Colors.blue, // Focus qilinganda rang
+                          : Colors.blue,
                     ),
                   ),
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                 ),
-                value: list1.contains(kategoriyaXarajat)
-                    ? kategoriyaXarajat
-                    : null,
+                value: selectedExpenseCategory,
                 isExpanded: true,
                 style: TextStyle(
                   fontSize: 16,
@@ -177,11 +193,11 @@ class _ExpensesPageState extends State<ExpensesPage> {
                       ? Colors.teal
                       : Colors.blue,
                 ),
-                items: list1.map((item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
+                items: chiqimlarKategoryList.map((expense) {
+                  return DropdownMenuItem<ExpenseCategoryModel>(
+                    value: expense,
                     child: Text(
-                      item,
+                      expense.name,
                       style: TextStyle(
                         fontSize: 16,
                         color: Theme.of(context).brightness == Brightness.dark
@@ -191,13 +207,142 @@ class _ExpensesPageState extends State<ExpensesPage> {
                     ),
                   );
                 }).toList(),
-                onChanged: (newItem) {
+                onChanged: (ExpenseCategoryModel? newValue) {
                   setState(() {
-                    kategoriyaXarajat = newItem!;
-                    kategoriyaXarajatId = list1.indexOf(newItem) + 1;
+                    selectedExpenseCategory = newValue!;
                   });
                 },
               ),
+              const SizedBox(
+                height: 16,
+              ),
+              Row(children: [
+                Expanded(
+                  flex: 2,
+                  child: TextFormField(
+                    controller: _narxController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    decoration: InputDecoration(
+                        labelText: 'Нарх',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.teal
+                                  : Colors.blue,
+                              width: 2),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.teal
+                                  : Colors.blue,
+                              width: 2),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.teal
+                                  : Colors.blue,
+                              width: 2),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 20.0, horizontal: 10.0)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Нархни киритинг';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: DropdownButtonFormField<CurrencyModel>(
+                    value: selectedValyuta,
+                    isExpanded: true,
+                    items: valyutaList.map((currency) {
+                      return DropdownMenuItem<CurrencyModel>(
+                        value: currency,
+                        child: Text(
+                          currency.currency,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(
+                      labelText: 'Валюта',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.teal
+                                    : Colors.blue,
+                            width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          width: 2,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.teal
+                              : Colors.blue,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          width: 2,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.teal
+                              : Colors.blue,
+                        ),
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                    ),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    icon: Icon(
+                      Icons.arrow_drop_down_circle_outlined,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.teal
+                          : Colors.blue,
+                    ),
+                    onChanged: (CurrencyModel? value) {
+                      setState(() {
+                        selectedValyuta = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Валютани танланг';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ]),
               SizedBox(
                 height: 16.0,
               ),
@@ -206,50 +351,6 @@ class _ExpensesPageState extends State<ExpensesPage> {
                   child: Column(
                     spacing: 18.0,
                     children: [
-                      TextFormField(
-                        controller: _narxController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        decoration: InputDecoration(
-                            labelText: 'Нарх',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.teal
-                                      : Colors.blue,
-                                  width: 2),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.teal
-                                      : Colors.blue,
-                                  width: 2),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.teal
-                                      : Colors.blue,
-                                  width: 2),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 20.0, horizontal: 10.0)),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Нархни киритинг';
-                          }
-                          return null;
-                        },
-                      ),
                       TextFormField(
                         controller: _descriptionController,
                         decoration: InputDecoration(
@@ -308,13 +409,15 @@ class _ExpensesPageState extends State<ExpensesPage> {
                   onPressed: uploadViewModel.isLoading
                       ? null
                       : () async {
+                          print('$selectedExpenseCategory $_image');
                           if (_formKey.currentState!.validate()) {
-                            if (kategoriyaXarajat != null && _image != null) {
+                            if (selectedExpenseCategory != null && _image != null) {
                               ExpensesDataModel data = ExpensesDataModel(
                                 user: foydalanuvchiId ?? 1,
-                                expense: kategoriyaXarajatId ?? 1,
+                                expense: selectedExpenseCategory?.id ?? 1,
                                 price: _narxController.text,
                                 description: _descriptionController.text,
+                                currency: selectedValyuta!.id,
                               );
 
                               uploadViewModel.changeLoadingState();
@@ -330,8 +433,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
                                 _descriptionController.clear();
                                 setState(() {
                                   _image = null;
-                                  kategoriyaXarajat = null;
-                                  kategoriyaXarajatId = null;
+                                  selectedExpenseCategory = null;
+                                  selectedExpenseCategory = null;
                                 });
                                 MyDialog.info('Чиқим муваффақиятли юборилди!');
                                 Navigator.pop(context);

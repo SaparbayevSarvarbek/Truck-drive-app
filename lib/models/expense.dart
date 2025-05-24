@@ -1,28 +1,35 @@
 class Expense {
-  final int id;
-  final String name;
-  final int price;
-  final String description;
-  final int driver;
-  final int raysHistory;
+
+  final List<dynamic> texnics;
+  final List<dynamic> balons;
+  final List<dynamic> balonFurgons;
+  final List<dynamic> optols;
+  final List<dynamic> chiqimliks;
+  final List<dynamic> arizalar;
+  final List<dynamic> referenslar;
+  final int totalUsd;
 
   Expense({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.description,
-    required this.driver,
-    required this.raysHistory,
+    required this.texnics,
+    required this.balons,
+    required this.balonFurgons,
+    required this.optols,
+    required this.chiqimliks,
+    required this.arizalar,
+    required this.referenslar,
+    required this.totalUsd,
   });
 
   factory Expense.fromJson(Map<String, dynamic> json) {
     return Expense(
-      id: json['id']??0,
-      name: json['name']??'',
-      price: json['price']??0,
-      description: json['description']??'',
-      driver: json['driver']??0,
-      raysHistory: json['rays_history']??0,
+      texnics: json['texnics'] ?? [],
+      balons: json['balons'] ?? [],
+      balonFurgons: json['balon_furgons'] ?? [],
+      optols: json['optols'] ?? [],
+      chiqimliks: json['chiqimliks'] ?? [],
+      arizalar: json['arizalar'] ?? [],
+      referenslar: json['referenslar'] ?? [],
+      totalUsd: json['total_usd'] ?? 0,
     );
   }
 }

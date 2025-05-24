@@ -56,40 +56,42 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text("Profile"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () async {
-                final pickedFile =
-                    await ImagePicker().pickImage(source: ImageSource.gallery);
-                if (pickedFile != null) {
-                  profileProvider.pickImage(File(pickedFile.path));
-                }
-              },
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: profileProvider.image != null
-                    ? FileImage(profileProvider.image!)
-                    : null,
-                child: profileProvider.image == null
-                    ? const Icon(
-                        Icons.account_circle,
-                        size: 80,
-                      )
-                    : null,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  final pickedFile =
+                      await ImagePicker().pickImage(source: ImageSource.gallery);
+                  if (pickedFile != null) {
+                    profileProvider.pickImage(File(pickedFile.path));
+                  }
+                },
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: profileProvider.image != null
+                      ? FileImage(profileProvider.image!)
+                      : null,
+                  child: profileProvider.image == null
+                      ? const Icon(
+                          Icons.account_circle,
+                          size: 80,
+                        )
+                      : null,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            _buildInfoCard("Исм", userData?.fullName ?? "Номаълум"),
-            _buildInfoCard(
-                "Фойдаланувчи номи", userData?.username ?? "Номаълум"),
-            _buildInfoCard(
-                "Телефон рақам", userData?.phoneNumber ?? "Номаълум"),
-            _buildInfoCard("Статус", userData?.status ?? "Номаълум"),
-          ],
+              const SizedBox(height: 20),
+              _buildInfoCard("Исм", userData?.fullName ?? "Номаълум"),
+              _buildInfoCard(
+                  "Фойдаланувчи номи", userData?.username ?? "Номаълум"),
+              _buildInfoCard(
+                  "Телефон рақам", userData?.phoneNumber ?? "Номаълум"),
+              _buildInfoCard("Статус", userData?.status ?? "Номаълум"),
+            ],
+          ),
         ),
       ),
     );

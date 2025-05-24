@@ -17,8 +17,8 @@ class HistoryViewModel extends ChangeNotifier {
 
     try {
       final response = await ApiService().getHistory(userId);
-      List jsonResponse = response['history'];
-      _historyList = jsonResponse.map((e) => History.fromJson(e)).toList();
+      List<dynamic> jsonResponse = response['history'];
+      _historyList = jsonResponse.map((e) => History.fromJson(e as Map<String, dynamic>)).toList();
       _errorMessage = '';
     } catch (e) {
       _errorMessage = 'Failed to load history: $e';
